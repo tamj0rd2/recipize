@@ -28,11 +28,6 @@ func (r *RecipeStorage) GetRecipe(ctx context.Context, name domain.RecipeName) (
 	return recipe, ok, nil
 }
 
-func (r *RecipeStorage) DoesRecipeExist(ctx context.Context, name domain.RecipeName) (bool, error) {
-	_, ok := r.recipes[name]
-	return ok, nil
-}
-
 func (r *RecipeStorage) CreateRecipe(ctx context.Context, recipe domain.Recipe) error {
 	r.recipes[recipe.Name] = recipe
 	return nil

@@ -9,7 +9,6 @@ import (
 )
 
 type Recipize interface {
-	DoesRecipeExist(ctx context.Context, name domain.RecipeName) (bool, error)
 	CreateRecipe(ctx context.Context, recipe domain.Recipe) error
 	GetRecipes(ctx context.Context) ([]domain.RecipeName, error)
 	GetRecipe(ctx context.Context, name domain.RecipeName) (domain.Recipe, bool, error)
@@ -33,7 +32,7 @@ func (d *Driver) GivenTheRecipeDoesNotExist(name domain.RecipeName) {
 	t := d.t
 	t.Helper()
 
-	exists, err := d.DoesRecipeExist(d.ctx, name)
+	_, exists, err := d.GetRecipe(d.ctx, name)
 	assert.NoError(t, err, "failed to check if recipe exists")
 	assert.False(t, exists, "the recipe already exists")
 }
@@ -49,8 +48,6 @@ func (d *Driver) WhenIAttemptToCreateTheRecipe(recipe domain.Recipe) {
 func (d *Driver) ThenICanSeeTheRecipeInMyRecipesList(name domain.RecipeName) {
 	t := d.t
 	t.Helper()
-
-	d.thenTheRecipeExists(name)
 
 	recipes, err := d.Recipize.GetRecipes(d.ctx)
 	assert.NoError(t, err, "failed to get recipes")
@@ -78,13 +75,4 @@ func (d *Driver) ThenICanSeeTheIngredientsOfTheRecipe(name domain.RecipeName, ex
 		t.Fatalf("the ingredients %v are missing from the result %v", missingIngredients, recipe.Ingredients)
 	}
 	assert.Equal(t, len(expectedIngredients), len(recipe.Ingredients), "got the wrong amount of ingredients. expected %v but got %v", expectedIngredients, recipe.Ingredients)
-}
-
-func (d *Driver) thenTheRecipeExists(name domain.RecipeName) {
-	t := d.t
-	t.Helper()
-
-	exists, err := d.DoesRecipeExist(d.ctx, name)
-	assert.NoError(t, err, "failed to check if recipe exists")
-	assert.True(t, exists, "the recipe doesn't exist")
 }

@@ -7,7 +7,6 @@ import (
 
 type RecipeStorage interface {
 	CreateRecipe(ctx context.Context, recipe Recipe) error
-	DoesRecipeExist(ctx context.Context, name RecipeName) (bool, error)
 	GetRecipes(ctx context.Context) ([]RecipeName, error)
 	GetRecipe(ctx context.Context, name RecipeName) (Recipe, bool, error)
 }
@@ -30,7 +29,7 @@ func (s Service) GetRecipe(ctx context.Context, name RecipeName) (Recipe, bool, 
 }
 
 func (s Service) DoesRecipeExist(ctx context.Context, name RecipeName) (bool, error) {
-	doesExist, err := s.recipeStorage.DoesRecipeExist(ctx, name)
+	_, doesExist, err := s.recipeStorage.GetRecipe(ctx, name)
 	if err != nil {
 		return false, fmt.Errorf("failed to check if recipe exists: %w", err)
 	}
