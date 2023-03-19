@@ -9,6 +9,9 @@ type RecipeStorage interface {
 	CreateRecipe(ctx context.Context, recipe Recipe) error
 	GetRecipes(ctx context.Context) ([]RecipeName, error)
 	GetRecipe(ctx context.Context, name RecipeName) (Recipe, bool, error)
+	DeleteRecipe(ctx context.Context, name RecipeName) error
+	AddRecipeToMealPlan(ctx context.Context, recipe Recipe) error
+	GetMealPlan(ctx context.Context) (MealPlan, error)
 }
 
 func NewService(recipeStorage RecipeStorage) *Service {
@@ -52,4 +55,29 @@ func (s Service) GetRecipes(ctx context.Context) ([]RecipeName, error) {
 	}
 
 	return recipes, nil
+}
+
+func (s Service) AddRecipeToMealPlan(ctx context.Context, name RecipeName) error {
+	if err := s.recipeStorage.AddRecipeToMealPlan(ctx, Recipe{Name: name}); err != nil {
+		return fmt.Errorf("failed to add recipe to meal plan: %w", err)
+	}
+
+	return nil
+}
+
+func (s Service) GetMealPlan(ctx context.Context) (MealPlan, error) {
+	mealPlan, err := s.recipeStorage.GetMealPlan(ctx)
+	if err != nil {
+		return MealPlan{}, fmt.Errorf("failed to get meal plan: %w", err)
+	}
+
+	return mealPlan, nil
+}
+
+func (s Service) DeleteRecipe(ctx context.Context, name RecipeName) error {
+	if err := s.recipeStorage.DeleteRecipe(ctx, name); err != nil {
+		return fmt.Errorf("failed to delete recipe: %w", err)
+	}
+
+	return nil
 }
