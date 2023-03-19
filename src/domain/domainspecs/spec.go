@@ -6,13 +6,13 @@ import (
 	"testing"
 )
 
-type DSL interface {
+type RecipizeDSL interface {
 	GivenTheRecipeDoesNotExist(name domain.RecipeName)
 	WhenIAttemptToCreateTheRecipe(name domain.RecipeName)
 	ThenICanSeeTheRecipeInMyRecipesList(name domain.RecipeName)
 }
 
-func TestRecipize(t *testing.T, makeDriver func(ctx context.Context, t testing.TB) DSL) {
+func TestRecipize(t *testing.T, makeDriver func(ctx context.Context, t testing.TB) RecipizeDSL) {
 	t.Run("Creating a recipe", func(t *testing.T) {
 		driver := makeDriver(context.Background(), t)
 

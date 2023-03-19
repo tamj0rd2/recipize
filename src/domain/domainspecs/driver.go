@@ -3,13 +3,18 @@ package domainspecs
 import (
 	"context"
 	"github.com/alecthomas/assert/v2"
+	"github.com/tamj0rd2/recipize/lib/slices"
 	"github.com/tamj0rd2/recipize/src/domain"
-	"github.com/tamj0rd2/recipize/src/ports"
-	"github.com/tamj0rd2/recipize/testhelpers/slices"
 	"testing"
 )
 
-func NewDriver(ctx context.Context, t testing.TB, recipize ports.Recipize) *Driver {
+type Recipize interface {
+	DoesRecipeExist(ctx context.Context, name domain.RecipeName) (bool, error)
+	CreateRecipe(ctx context.Context, name domain.RecipeName) error
+	GetRecipes(ctx context.Context) ([]domain.RecipeName, error)
+}
+
+func NewDriver(ctx context.Context, t testing.TB, recipize Recipize) *Driver {
 	return &Driver{
 		ctx:      ctx,
 		t:        t,
@@ -19,7 +24,7 @@ func NewDriver(ctx context.Context, t testing.TB, recipize ports.Recipize) *Driv
 
 type Driver struct {
 	t testing.TB
-	ports.Recipize
+	Recipize
 	ctx context.Context
 }
 

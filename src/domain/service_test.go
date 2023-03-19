@@ -11,7 +11,7 @@ import (
 func TestService(t *testing.T) {
 	recipeStorage := memory.NewRecipeStorage()
 
-	domainspecs.TestRecipize(t, func(ctx context.Context, t testing.TB) domainspecs.DSL {
+	domainspecs.TestRecipize(t, func(ctx context.Context, t testing.TB) domainspecs.RecipizeDSL {
 		return domainspecs.NewDriver(ctx, t, domain.NewService(recipeStorage))
 	})
 }
