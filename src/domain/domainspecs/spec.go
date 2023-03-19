@@ -8,7 +8,7 @@ import (
 
 type RecipizeDSL interface {
 	GivenTheRecipeDoesNotExist(name domain.RecipeName)
-	WhenIAttemptToCreateTheRecipe(name domain.RecipeName, ingredients []domain.IngredientName)
+	WhenIAttemptToCreateTheRecipe(recipe domain.Recipe)
 	ThenICanSeeTheRecipeInMyRecipesList(name domain.RecipeName)
 	ThenICanSeeTheIngredientsOfTheRecipe(name domain.RecipeName, ingredients []domain.IngredientName)
 }
@@ -17,12 +17,14 @@ func TestRecipize(t *testing.T, makeDriver func(ctx context.Context, t testing.T
 	t.Run("Creating a recipe", func(t *testing.T) {
 		driver := makeDriver(context.Background(), t)
 
-		recipeName := domain.RecipeName("Scrambled eggs")
-		ingredients := []domain.IngredientName{"Egg", "Butter", "Salt", "Pepper", "Onion"}
+		recipe := domain.Recipe{
+			Name:        "Scrambled eggs",
+			Ingredients: []domain.IngredientName{"Egg", "Butter", "Salt", "Pepper", "Onion"},
+		}
 
-		driver.GivenTheRecipeDoesNotExist(recipeName)
-		driver.WhenIAttemptToCreateTheRecipe(recipeName, ingredients)
-		driver.ThenICanSeeTheRecipeInMyRecipesList(recipeName)
-		driver.ThenICanSeeTheIngredientsOfTheRecipe(recipeName, ingredients)
+		driver.GivenTheRecipeDoesNotExist(recipe.Name)
+		driver.WhenIAttemptToCreateTheRecipe(recipe)
+		driver.ThenICanSeeTheRecipeInMyRecipesList(recipe.Name)
+		driver.ThenICanSeeTheIngredientsOfTheRecipe(recipe.Name, recipe.Ingredients)
 	})
 }

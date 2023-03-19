@@ -10,7 +10,7 @@ import (
 
 type Recipize interface {
 	DoesRecipeExist(ctx context.Context, name domain.RecipeName) (bool, error)
-	CreateRecipe(ctx context.Context, name domain.RecipeName, ingredients []domain.IngredientName) error
+	CreateRecipe(ctx context.Context, recipe domain.Recipe) error
 	GetRecipes(ctx context.Context) ([]domain.RecipeName, error)
 	GetRecipe(ctx context.Context, name domain.RecipeName) (domain.Recipe, bool, error)
 }
@@ -38,11 +38,11 @@ func (d *Driver) GivenTheRecipeDoesNotExist(name domain.RecipeName) {
 	assert.False(t, exists, "the recipe already exists")
 }
 
-func (d *Driver) WhenIAttemptToCreateTheRecipe(name domain.RecipeName, ingredients []domain.IngredientName) {
+func (d *Driver) WhenIAttemptToCreateTheRecipe(recipe domain.Recipe) {
 	t := d.t
 	t.Helper()
 
-	err := d.Recipize.CreateRecipe(d.ctx, name, ingredients)
+	err := d.Recipize.CreateRecipe(d.ctx, recipe)
 	assert.NoError(t, err, "failed to create recipe")
 }
 
