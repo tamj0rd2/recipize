@@ -6,9 +6,10 @@ import (
 )
 
 type RecipeStorage interface {
-	CreateRecipe(ctx context.Context, name RecipeName) error
+	CreateRecipe(ctx context.Context, name RecipeName, ingredients []IngredientName) error
 	DoesRecipeExist(ctx context.Context, name RecipeName) (bool, error)
 	GetRecipes(ctx context.Context) ([]RecipeName, error)
+	GetRecipe(ctx context.Context, name RecipeName) (Recipe, bool, error)
 }
 
 func NewService(recipeStorage RecipeStorage) *Service {
@@ -17,6 +18,15 @@ func NewService(recipeStorage RecipeStorage) *Service {
 
 type Service struct {
 	recipeStorage RecipeStorage
+}
+
+func (s Service) GetRecipe(ctx context.Context, name RecipeName) (Recipe, bool, error) {
+	recipe, found, err := s.recipeStorage.GetRecipe(ctx, name)
+	if err != nil {
+		return Recipe{}, false, fmt.Errorf("failed to get recipe: %w", err)
+	}
+
+	return recipe, found, nil
 }
 
 func (s Service) DoesRecipeExist(ctx context.Context, name RecipeName) (bool, error) {
@@ -28,8 +38,8 @@ func (s Service) DoesRecipeExist(ctx context.Context, name RecipeName) (bool, er
 	return doesExist, nil
 }
 
-func (s Service) CreateRecipe(ctx context.Context, name RecipeName) error {
-	if err := s.recipeStorage.CreateRecipe(ctx, name); err != nil {
+func (s Service) CreateRecipe(ctx context.Context, name RecipeName, ingredients []IngredientName) error {
+	if err := s.recipeStorage.CreateRecipe(ctx, name, ingredients); err != nil {
 		return fmt.Errorf("failed to create recipe: %w", err)
 	}
 
